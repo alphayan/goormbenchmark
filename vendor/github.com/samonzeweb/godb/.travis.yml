@@ -1,0 +1,22 @@
+language: go
+
+go:
+  - "1.9.x"
+  - "1.10.x"
+  - "1.11.x"
+  - "1.12.x"
+  - "1.13.x"
+
+services:
+  - postgresql
+  - mysql
+
+env:
+  - GODB_POSTGRESQL="sslmode=disable user=postgres dbname=godb_test" GODB_MYSQL="travis:@/godb_test?parseTime=true"
+
+before_script:
+  - psql -c 'create database godb_test;' -U postgres
+  - mysql -e 'CREATE DATABASE godb_test;'
+  - mysql -e 'GRANT ALL ON godb_test.* to travis@localhost;'
+
+script: go test -v ./...
