@@ -12,11 +12,11 @@ var sqlxdb *sqlx.DB
 func init() {
 	st := NewSuite("sqlx")
 	st.InitF = func() {
-		st.AddBenchmark("Insert", 2000*ORM_MULTI, 0, SqlxInsert)
+		st.AddBenchmark("Insert", 500*ORM_MULTI, 0, SqlxInsert)
 		st.AddBenchmark("BulkInsert 100 row", 500*ORM_MULTI, 0, SqlxInsertMulti)
-		st.AddBenchmark("Update", 2000*ORM_MULTI, 0, SqlxUpdate)
-		st.AddBenchmark("Read", 4000*ORM_MULTI, 0, SqlxRead)
-		st.AddBenchmark("MultiRead limit 1000", 2000*ORM_MULTI, 1000, SqlxReadSlice)
+		st.AddBenchmark("Update", 500*ORM_MULTI, 0, SqlxUpdate)
+		st.AddBenchmark("Read", 500*ORM_MULTI, 0, SqlxRead)
+		st.AddBenchmark("MultiRead limit 500", 500*ORM_MULTI, 500, SqlxReadSlice)
 
 		db, err := sqlx.Connect("postgres", ORM_SOURCE)
 		checkErr(err)

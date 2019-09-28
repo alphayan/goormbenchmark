@@ -7,14 +7,14 @@ import (
 )
 
 type Model struct {
-	Id      int `qbs:"pk" orm:"auto" gorm:"primary_key" db:"id"`
-	Name    string
-	Title   string
-	Fax     string
-	Web     string
-	Age     int
-	Right   bool
-	Counter int64
+	Id      int    `qbs:"pk" orm:"auto" gorm:"primary_key" db:"id" xorm:"autoincr"`
+	Name    string `db:"name""`
+	Title   string `db:"title"`
+	Fax     string `db:"fax"`
+	Web     string `db:"web"`
+	Age     int    `db:"age"`
+	Right   bool   `db:"right"`
+	Counter int64  `db:"counter"`
 }
 
 func (*Model) TableName() string {
@@ -27,10 +27,10 @@ func NewModel() *Model {
 	m.Name = "Orm Benchmark"
 	m.Title = "Just a Benchmark for fun"
 	m.Fax = "99909990"
-	m.Web = "http://blog.milkpod29.me"
+	m.Web = "http://baidu.com"
 	m.Age = 100
 	m.Right = true
-	m.Counter = 1000
+	m.Counter = 500
 
 	return m
 }
@@ -71,18 +71,6 @@ func initDB() {
 			"right" boolean NOT NULL,
 			counter bigint NOT NULL,
 			CONSTRAINT models_pkey PRIMARY KEY (id)
-			) WITH (OIDS=FALSE);`,
-		`DROP TABLE IF EXISTS model;`,
-		`CREATE TABLE model (
-			id SERIAL NOT NULL,
-			name text NOT NULL,
-			title text NOT NULL,
-			fax text NOT NULL,
-			web text NOT NULL,
-			age integer NOT NULL,
-			"right" boolean NOT NULL,
-			counter bigint NOT NULL,
-			CONSTRAINT model_pkey PRIMARY KEY (id)
 			) WITH (OIDS=FALSE);`,
 	}
 

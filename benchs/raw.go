@@ -21,11 +21,11 @@ const (
 func init() {
 	st := NewSuite("raw")
 	st.InitF = func() {
-		st.AddBenchmark("Insert", 2000*ORM_MULTI, 0, RawInsert)
+		st.AddBenchmark("Insert", 500*ORM_MULTI, 0, RawInsert)
 		st.AddBenchmark("BulkInsert 100 row", 500*ORM_MULTI, 0, RawInsertMulti)
-		st.AddBenchmark("Update", 2000*ORM_MULTI, 0, RawUpdate)
-		st.AddBenchmark("Read", 4000*ORM_MULTI, 0, RawRead)
-		st.AddBenchmark("MultiRead limit 1000", 2000*ORM_MULTI, 1000, RawReadSlice)
+		st.AddBenchmark("Update", 500*ORM_MULTI, 0, RawUpdate)
+		st.AddBenchmark("Read", 500*ORM_MULTI, 0, RawRead)
+		st.AddBenchmark("MultiRead limit 500", 500*ORM_MULTI, 500, RawReadSlice)
 
 		raw, _ = sql.Open("postgres", ORM_SOURCE)
 	}

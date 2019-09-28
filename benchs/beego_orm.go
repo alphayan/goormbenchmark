@@ -11,11 +11,11 @@ var bo orm.Ormer
 func init() {
 	st := NewSuite("beego_orm")
 	st.InitF = func() {
-		st.AddBenchmark("Insert", 2000*ORM_MULTI, 0, BeegoOrmInsert)
+		st.AddBenchmark("Insert", 500*ORM_MULTI, 0, BeegoOrmInsert)
 		st.AddBenchmark("BulkInsert 100 row", 500*ORM_MULTI, 0, BeegoOrmInsertMulti)
-		st.AddBenchmark("Update", 2000*ORM_MULTI, 0, BeegoOrmUpdate)
-		st.AddBenchmark("Read", 4000*ORM_MULTI, 0, BeegoOrmRead)
-		st.AddBenchmark("MultiRead limit 1000", 2000*ORM_MULTI, 1000, BeegoOrmReadSlice)
+		st.AddBenchmark("Update", 500*ORM_MULTI, 0, BeegoOrmUpdate)
+		st.AddBenchmark("Read", 500*ORM_MULTI, 0, BeegoOrmRead)
+		st.AddBenchmark("MultiRead limit 500", 500*ORM_MULTI, 500, BeegoOrmReadSlice)
 
 		orm.RegisterDataBase("default", "postgres", ORM_SOURCE, ORM_MAX_IDLE, ORM_MAX_CONN)
 		orm.RegisterModel(new(Model))
@@ -112,7 +112,7 @@ func BeegoOrmReadSlice(b *B) {
 
 	for i := 0; i < b.N; i++ {
 		var models []*Model
-		if _, err := bo.QueryTable("beego_model").Filter("id__gt", 0).Limit(b.L).All(&models); err != nil {
+		if _, err := bo.QueryTable("models").Filter("id__gt", 0).Limit(b.L).All(&models); err != nil {
 			fmt.Println(err)
 			b.FailNow()
 		}

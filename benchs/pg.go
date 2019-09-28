@@ -11,17 +11,17 @@ var pgdb *pg.DB
 func init() {
 	st := NewSuite("pg")
 	st.InitF = func() {
-		st.AddBenchmark("Insert", 2000*ORM_MULTI, 0, PgInsert)
+		st.AddBenchmark("Insert", 500*ORM_MULTI, 0, PgInsert)
 		st.AddBenchmark("BulkInsert 100 row", 500*ORM_MULTI, 0, PgInsertMulti)
-		st.AddBenchmark("Update", 2000*ORM_MULTI, 0, PgUpdate)
-		st.AddBenchmark("Read", 4000*ORM_MULTI, 0, PgRead)
-		st.AddBenchmark("MultiRead limit 1000", 2000*ORM_MULTI, 1000, PgReadSlice)
+		st.AddBenchmark("Update", 500*ORM_MULTI, 0, PgUpdate)
+		st.AddBenchmark("Read", 500*ORM_MULTI, 0, PgRead)
+		st.AddBenchmark("MultiRead limit 500", 500*ORM_MULTI, 500, PgReadSlice)
 
 		pgdb = pg.Connect(&pg.Options{
-			Addr:     "localhost:5432",
-			User:     "bench",
-			Password: "pass",
-			Database: "benchdb",
+			Addr:     "192.168.199.248:5432",
+			User:     "postgres",
+			Password: "root123456",
+			Database: "test",
 		})
 	}
 }

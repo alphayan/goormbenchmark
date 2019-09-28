@@ -11,11 +11,11 @@ var gormdb *gorm.DB
 func init() {
 	st := NewSuite("gorm")
 	st.InitF = func() {
-		st.AddBenchmark("Insert", 2000*ORM_MULTI, 0, GormInsert)
+		st.AddBenchmark("Insert", 500*ORM_MULTI, 0, GormInsert)
 		st.AddBenchmark("BulkInsert 100 row", 0, 0, GormInsertMulti)
-		st.AddBenchmark("Update", 2000*ORM_MULTI, 0, GormUpdate)
-		st.AddBenchmark("Read", 4000*ORM_MULTI, 0, GormRead)
-		st.AddBenchmark("MultiRead limit 1000", 2000*ORM_MULTI, 1000, GormReadSlice)
+		st.AddBenchmark("Update", 500*ORM_MULTI, 0, GormUpdate)
+		st.AddBenchmark("Read", 500*ORM_MULTI, 0, GormRead)
+		st.AddBenchmark("MultiRead limit 500", 500*ORM_MULTI, 500, GormReadSlice)
 
 		conn, err := gorm.Open("postgres", ORM_SOURCE)
 		if err != nil {

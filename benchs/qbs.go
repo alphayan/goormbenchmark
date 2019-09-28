@@ -11,11 +11,11 @@ var qo *qbs.Qbs
 func init() {
 	st := NewSuite("qbs")
 	st.InitF = func() {
-		st.AddBenchmark("Insert", 2000*ORM_MULTI, 0, QbsInsert)
+		st.AddBenchmark("Insert", 500*ORM_MULTI, 0, QbsInsert)
 		st.AddBenchmark("BulkInsert 100 row", 500*ORM_MULTI, 0, QbsInsertMulti)
-		st.AddBenchmark("Update", 2000*ORM_MULTI, 0, QbsUpdate)
-		st.AddBenchmark("Read", 4000*ORM_MULTI, 0, QbsRead)
-		st.AddBenchmark("MultiRead limit 1000", 2000*ORM_MULTI, 1000, QbsReadSlice)
+		st.AddBenchmark("Update", 500*ORM_MULTI, 0, QbsUpdate)
+		st.AddBenchmark("Read", 500*ORM_MULTI, 0, QbsRead)
+		st.AddBenchmark("MultiRead limit 500", 500*ORM_MULTI, 500, QbsReadSlice)
 
 		qbs.Register("postgres", ORM_SOURCE, "q_model", qbs.NewPostgres())
 		qbs.ChangePoolSize(ORM_MAX_IDLE)
