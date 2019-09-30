@@ -12,12 +12,11 @@ func init() {
 	st := NewSuite("dbr")
 	st.InitF = func() {
 		st.AddBenchmark("Insert", 2000*ORM_MULTI, 0, DbrInsert)
-		st.AddBenchmark("BulkInsert 100 row", 500*ORM_MULTI, 0, DbrInsertMulti)
+		st.AddBenchmark("BulkInsert 100 row", 2000*ORM_MULTI, 0, DbrInsertMulti)
 		st.AddBenchmark("Update", 2000*ORM_MULTI, 0, DbrUpdate)
-		st.AddBenchmark("Read", 4000*ORM_MULTI, 0, DbrRead)
+		st.AddBenchmark("Read", 2000*ORM_MULTI, 0, DbrRead)
 		st.AddBenchmark("MultiRead limit 1000", 2000*ORM_MULTI, 1000, DbrReadSlice)
-
-		conn, _ := dbr.Open("msyql", ORM_SOURCE, nil)
+		conn, _ := dbr.Open("mysql", ORM_SOURCE, nil)
 		sess := conn.NewSession(nil)
 		dbrsession = sess
 	}
@@ -32,7 +31,7 @@ func DbrInsert(b *B) {
 
 	for i := 0; i < b.N; i++ {
 		m.Id = 0
-		if _, err := dbrsession.InsertInto("model").Columns("name", "title", "fax", "web", "age", "counter").Record(m).Exec(); err != nil {
+		if _, err := dbrsession.InsertInto("models").Columns("name", "title", "fax", "web", "age", "counter").Record(m).Exec(); err != nil {
 			fmt.Println(err)
 			b.FailNow()
 		}
@@ -45,7 +44,7 @@ func DbrInsertMulti(b *B) {
 		initDB()
 		m = NewModel()
 	})
-	q := dbrsession.InsertInto("model").Columns("name", "title", "fax", "web", "age", "counter")
+	q := dbrsession.InsertInto("models").Columns("name", "title", "fax", "web", "age", "counter")
 	for i := 0; i < b.N; i++ {
 		m.Id = 0
 		q = q.Record(m)
@@ -63,7 +62,7 @@ func DbrUpdate(b *B) {
 	wrapExecute(b, func() {
 		initDB()
 		m = NewModel()
-		if _, err := dbrsession.InsertInto("model").Columns("name", "title", "fax", "web", "age", "counter").Record(m).Exec(); err != nil {
+		if _, err := dbrsession.InsertInto("models").Columns("name", "title", "fax", "web", "age", "counter").Record(m).Exec(); err != nil {
 			fmt.Println(err)
 			b.FailNow()
 		}
@@ -88,14 +87,14 @@ func DbrRead(b *B) {
 	wrapExecute(b, func() {
 		initDB()
 		m = NewModel()
-		if _, err := dbrsession.InsertInto("model").Columns("name", "title", "fax", "web", "age", "counter").Record(m).Exec(); err != nil {
+		if _, err := dbrsession.InsertInto("models").Columns("name", "title", "fax", "web", "age", "counter").Record(m).Exec(); err != nil {
 			fmt.Printf("insert before read err: %v\n", err)
 			b.FailNow()
 		}
 	})
 
 	for i := 0; i < b.N; i++ {
-		if _, err := dbrsession.Select("*").From("model").Where("id = ?", m.Id).Load(&m); err != nil {
+		if _, err := dbrsession.Select("*").From("models").Where("id = ?", m.Id).Load(&m); err != nil {
 			fmt.Println(err)
 			b.FailNow()
 		}
@@ -108,7 +107,7 @@ func DbrReadSlice(b *B) {
 		initDB()
 		m = NewModel()
 		for i := 0; i < b.L; i++ {
-			if _, err := dbrsession.InsertInto("model").Columns("name", "title", "fax", "web", "age", "counter").Record(m).Exec(); err != nil {
+			if _, err := dbrsession.InsertInto("models").Columns("name", "title", "fax", "web", "age", "counter").Record(m).Exec(); err != nil {
 				fmt.Println(err)
 				b.FailNow()
 			}
@@ -116,7 +115,7 @@ func DbrReadSlice(b *B) {
 	})
 	for i := 0; i < b.N; i++ {
 		var m []Model
-		if _, err := dbrsession.Select("*").From("model").Where("id > ?", 0).Limit(uint64(b.L)).Load(&m); err != nil {
+		if _, err := dbrsession.Select("*").From("models").Where("id > ?", 0).Limit(uint64(b.L)).Load(&m); err != nil {
 			fmt.Println(err)
 			b.FailNow()
 		}

@@ -12,9 +12,9 @@ func init() {
 	st := NewSuite("gorm")
 	st.InitF = func() {
 		st.AddBenchmark("Insert", 2000*ORM_MULTI, 0, GormInsert)
-		st.AddBenchmark("BulkInsert 100 row", 500*ORM_MULTI, 0, GormInsertMulti)
+		st.AddBenchmark("BulkInsert 100 row", 2000*ORM_MULTI, 0, GormInsertMulti)
 		st.AddBenchmark("Update", 2000*ORM_MULTI, 0, GormUpdate)
-		st.AddBenchmark("Read", 4000*ORM_MULTI, 0, GormRead)
+		st.AddBenchmark("Read", 2000*ORM_MULTI, 0, GormRead)
 		st.AddBenchmark("MultiRead limit 1000", 2000*ORM_MULTI, 1000, GormReadSlice)
 
 		conn, err := gorm.Open("mysql", ORM_SOURCE)

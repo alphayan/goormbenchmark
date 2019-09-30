@@ -30,7 +30,7 @@ func NewModel() *Model {
 	m.Web = "http://baidu.com"
 	m.Age = 100
 	m.Right = true
-	m.Counter = 500
+	m.Counter = 2000
 
 	return m
 }

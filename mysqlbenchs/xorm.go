@@ -12,9 +12,9 @@ func init() {
 	st := NewSuite("xorm")
 	st.InitF = func() {
 		st.AddBenchmark("Insert", 2000*ORM_MULTI, 0, XormInsert)
-		st.AddBenchmark("BulkInsert 100 row", 500*ORM_MULTI, 0, XormInsertMulti)
+		st.AddBenchmark("BulkInsert 100 row", 2000*ORM_MULTI, 0, XormInsertMulti)
 		st.AddBenchmark("Update", 2000*ORM_MULTI, 0, XormUpdate)
-		st.AddBenchmark("Read", 4000*ORM_MULTI, 0, XormRead)
+		st.AddBenchmark("Read", 2000*ORM_MULTI, 0, XormRead)
 		st.AddBenchmark("MultiRead limit 1000", 2000*ORM_MULTI, 1000, XormReadSlice)
 
 		engine, _ := xorm.NewEngine("mysql", ORM_SOURCE)
@@ -114,7 +114,7 @@ func XormReadSlice(b *B) {
 
 	for i := 0; i < b.N; i++ {
 		var models []*Model
-		if err := xo.Table("model").Where("id > ?", 0).NoCache().Limit(b.L).Find(&models); err != nil {
+		if err := xo.Table("models").Where("id > ?", 0).NoCache().Limit(b.L).Find(&models); err != nil {
 			fmt.Println(err)
 			b.FailNow()
 		}

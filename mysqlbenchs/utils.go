@@ -52,8 +52,8 @@ func wrapExecute(b *B, cbk func()) {
 
 func initDB() {
 	sqls := []string{
-		"DROP TABLE IF EXISTS `model`",
-		"CREATE TABLE `model` (" +
+		"DROP TABLE IF EXISTS `models`",
+		"CREATE TABLE `models` (" +
 			"`id` int(11) NOT NULL AUTO_INCREMENT," +
 			"`name` varchar(255) NOT NULL," +
 			"`title` varchar(255) NOT NULL," +

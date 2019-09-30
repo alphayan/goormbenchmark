@@ -11,11 +11,11 @@ var dbrsession *dbr.Session
 func init() {
 	st := NewSuite("dbr")
 	st.InitF = func() {
-		st.AddBenchmark("Insert", 500*ORM_MULTI, 0, DbrInsert)
-		st.AddBenchmark("BulkInsert 100 row", 500*ORM_MULTI, 0, DbrInsertMulti)
-		st.AddBenchmark("Update", 500*ORM_MULTI, 0, DbrUpdate)
-		st.AddBenchmark("Read", 500*ORM_MULTI, 0, DbrRead)
-		st.AddBenchmark("MultiRead limit 500", 500*ORM_MULTI, 500, DbrReadSlice)
+		st.AddBenchmark("Insert", 2000*ORM_MULTI, 0, DbrInsert)
+		st.AddBenchmark("BulkInsert 100 row", 2000*ORM_MULTI, 0, DbrInsertMulti)
+		st.AddBenchmark("Update", 2000*ORM_MULTI, 0, DbrUpdate)
+		st.AddBenchmark("Read", 2000*ORM_MULTI, 0, DbrRead)
+		st.AddBenchmark("MultiRead limit 2000", 2000*ORM_MULTI, 2000, DbrReadSlice)
 
 		conn, _ := dbr.Open("postgres", ORM_SOURCE, nil)
 		sess := conn.NewSession(nil)

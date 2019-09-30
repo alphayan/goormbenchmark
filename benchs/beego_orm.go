@@ -11,11 +11,11 @@ var bo orm.Ormer
 func init() {
 	st := NewSuite("beego_orm")
 	st.InitF = func() {
-		st.AddBenchmark("Insert", 500*ORM_MULTI, 0, BeegoOrmInsert)
-		st.AddBenchmark("BulkInsert 100 row", 500*ORM_MULTI, 0, BeegoOrmInsertMulti)
-		st.AddBenchmark("Update", 500*ORM_MULTI, 0, BeegoOrmUpdate)
-		st.AddBenchmark("Read", 500*ORM_MULTI, 0, BeegoOrmRead)
-		st.AddBenchmark("MultiRead limit 500", 500*ORM_MULTI, 500, BeegoOrmReadSlice)
+		st.AddBenchmark("Insert", 2000*ORM_MULTI, 0, BeegoOrmInsert)
+		st.AddBenchmark("BulkInsert 100 row", 2000*ORM_MULTI, 0, BeegoOrmInsertMulti)
+		st.AddBenchmark("Update", 2000*ORM_MULTI, 0, BeegoOrmUpdate)
+		st.AddBenchmark("Read", 2000*ORM_MULTI, 0, BeegoOrmRead)
+		st.AddBenchmark("MultiRead limit 2000", 2000*ORM_MULTI, 2000, BeegoOrmReadSlice)
 
 		orm.RegisterDataBase("default", "postgres", ORM_SOURCE, ORM_MAX_IDLE, ORM_MAX_CONN)
 		orm.RegisterModel(new(Model))

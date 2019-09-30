@@ -11,10 +11,10 @@ var raw *sql.DB
 
 const (
 	rawInsertBaseSQL   = `INSERT INTO models (name, title, fax, web, age, counter) VALUES `
-	rawInsertValuesSQL = `($1, $2, $3, $4, $5, $6)`
+	rawInsertValuesSQL = `(?, ?, ?, ?, ?, ?)`
 	rawInsertSQL       = rawInsertBaseSQL + rawInsertValuesSQL
-	rawUpdateSQL       = `UPDATE models SET name = $1, title = $2, fax = $3, web = $4, age = $5, counter = $6 WHERE id = $7`
-	rawSelectSQL       = `SELECT id, name, title, fax, web, age,counter FROM models WHERE id = $1`
+	rawUpdateSQL       = `UPDATE models SET name = ?, title = ?, fax = ?, web = ?, age = ?, counter = ? WHERE id = ?`
+	rawSelectSQL       = `SELECT id, name, title, fax, web, age,counter FROM models WHERE id = ?`
 	rawSelectMultiSQL  = `SELECT id, name, title, fax, web, age, counter FROM models WHERE id > 0 LIMIT 100`
 )
 
@@ -22,9 +22,9 @@ func init() {
 	st := NewSuite("raw")
 	st.InitF = func() {
 		st.AddBenchmark("Insert", 2000*ORM_MULTI, 0, RawInsert)
-		st.AddBenchmark("BulkInsert 100 row", 500*ORM_MULTI, 0, RawInsertMulti)
+		st.AddBenchmark("BulkInsert 100 row", 2000*ORM_MULTI, 0, RawInsertMulti)
 		st.AddBenchmark("Update", 2000*ORM_MULTI, 0, RawUpdate)
-		st.AddBenchmark("Read", 4000*ORM_MULTI, 0, RawRead)
+		st.AddBenchmark("Read", 2000*ORM_MULTI, 0, RawRead)
 		st.AddBenchmark("MultiRead limit 1000", 2000*ORM_MULTI, 1000, RawReadSlice)
 
 		raw, _ = sql.Open("mysql", ORM_SOURCE)
@@ -80,14 +80,13 @@ func RawInsertMulti(b *B) {
 	counter := 1
 	for i := 0; i < 100; i++ {
 		hoge := ""
-		for j := 0; j < 7; j++ {
-			if j != 6 {
-				hoge += "$" + strconv.Itoa(counter) + ","
+		for j := 0; j < 6; j++ {
+			if j != 5 {
+				hoge += "?" + ","
 			} else {
-				hoge += "$" + strconv.Itoa(counter)
+				hoge += "?"
 			}
 			counter++
-
 		}
 		if i != 99 {
 			valuesSQL += "(" + hoge + "),"
@@ -97,7 +96,7 @@ func RawInsertMulti(b *B) {
 	}
 
 	for i := 0; i < b.N; i++ {
-		nFields := 7
+		nFields := 6
 		query := rawInsertBaseSQL + valuesSQL
 		args := make([]interface{}, len(ms)*nFields)
 		for j := range ms {
@@ -107,7 +106,7 @@ func RawInsertMulti(b *B) {
 			args[offset+2] = ms[j].Fax
 			args[offset+3] = ms[j].Web
 			args[offset+4] = ms[j].Age
-			args[offset+6] = ms[j].Counter
+			args[offset+5] = ms[j].Counter
 		}
 		// pq dose not support the LastInsertId method.
 		_, err := raw.Exec(query, args...)

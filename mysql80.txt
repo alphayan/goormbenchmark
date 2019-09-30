@@ -1,0 +1,78 @@
+sqlx
+                   Insert:   2000     7.88s      3938409 ns/op     848 B/op     15 allocs/op
+       BulkInsert 100 row:   2000     benchmark not implemeted yet - https://github.com/jmoiron/sqlx/issues/134
+                   Update:   2000     4.52s      2259158 ns/op    1088 B/op     16 allocs/op
+                     Read:   2000     2.24s      1121507 ns/op    1810 B/op     36 allocs/op
+     MultiRead limit 1000:   2000    21.85s     10926113 ns/op  385235 B/op  14942 allocs/op
+dbr
+                   Insert:   2000     5.67s      2833376 ns/op    2740 B/op     74 allocs/op
+       BulkInsert 100 row:   2000     1.70s       850218 ns/op    2099 B/op     42 allocs/op
+                   Update:   2000     2.24s      1118210 ns/op    2617 B/op     60 allocs/op
+                     Read:   2000     2.30s      1147817 ns/op    2104 B/op     34 allocs/op
+     MultiRead limit 1000:   2000    33.95s     16974428 ns/op  622482 B/op  16053 allocs/op
+xorm
+                   Insert:   2000     6.30s      3148890 ns/op    2351 B/op     75 allocs/op
+       BulkInsert 100 row:   2000    31.98s     15991246 ns/op  210278 B/op   4263 allocs/op
+                   Update:   2000     4.08s      2040548 ns/op    2737 B/op     98 allocs/op
+                     Read:   2000     4.86s      2429631 ns/op    9021 B/op    248 allocs/op
+     MultiRead limit 1000:   2000    28.56s     14279999 ns/op 1637513 B/op  72103 allocs/op
+beego_orm
+                   Insert:   2000     4.95s      2475037 ns/op    1241 B/op     35 allocs/op
+       BulkInsert 100 row:   2000    19.79s      9892962 ns/op   89590 B/op   1429 allocs/op
+                   Update:   2000     3.37s      1684628 ns/op    1264 B/op     36 allocs/op
+                     Read:   2000     2.30s      1150904 ns/op    2464 B/op     89 allocs/op
+     MultiRead limit 1000:   2000    19.40s      9699222 ns/op  818825 B/op  40987 allocs/op
+gorm
+                   Insert:   2000    11.35s      5676504 ns/op    7420 B/op    141 allocs/op
+       BulkInsert 100 row:   2000     Don't support bulk insert - https://github.com/jinzhu/gorm/issues/255
+                   Update:   2000    14.18s      7088272 ns/op   18166 B/op    365 allocs/op
+                     Read:   2000     4.20s      2100567 ns/op    7339 B/op    148 allocs/op
+     MultiRead limit 1000:   2000    24.93s     12465077 ns/op 2393050 B/op  57032 allocs/op
+raw
+                   Insert:   2000     5.10s      2549153 ns/op     488 B/op     12 allocs/op
+       BulkInsert 100 row:   2000    27.33s     13662662 ns/op   89609 B/op    809 allocs/op
+                   Update:   2000     1.98s       989722 ns/op     552 B/op     12 allocs/op
+                     Read:   2000     1.94s       972348 ns/op    1344 B/op     34 allocs/op
+     MultiRead limit 1000:   2000    18.96s      9480064 ns/op  330224 B/op  12919 allocs/op
+
+Reports: 
+
+  2000 times - Insert
+ beego_orm:     4.95s      2475037 ns/op    1241 B/op     35 allocs/op
+       raw:     5.10s      2549153 ns/op     488 B/op     12 allocs/op
+       dbr:     5.67s      2833376 ns/op    2740 B/op     74 allocs/op
+      xorm:     6.30s      3148890 ns/op    2351 B/op     75 allocs/op
+      sqlx:     7.88s      3938409 ns/op     848 B/op     15 allocs/op
+      gorm:    11.35s      5676504 ns/op    7420 B/op    141 allocs/op
+
+  2000 times - BulkInsert 100 row
+       dbr:     1.70s       850218 ns/op    2099 B/op     42 allocs/op
+ beego_orm:    19.79s      9892962 ns/op   89590 B/op   1429 allocs/op
+       raw:    27.33s     13662662 ns/op   89609 B/op    809 allocs/op
+      xorm:    31.98s     15991246 ns/op  210278 B/op   4263 allocs/op
+      sqlx:     benchmark not implemeted yet - https://github.com/jmoiron/sqlx/issues/134
+      gorm:     Don't support bulk insert - https://github.com/jinzhu/gorm/issues/255
+
+  2000 times - Update
+       raw:     1.98s       989722 ns/op     552 B/op     12 allocs/op
+       dbr:     2.24s      1118210 ns/op    2617 B/op     60 allocs/op
+ beego_orm:     3.37s      1684628 ns/op    1264 B/op     36 allocs/op
+      xorm:     4.08s      2040548 ns/op    2737 B/op     98 allocs/op
+      sqlx:     4.52s      2259158 ns/op    1088 B/op     16 allocs/op
+      gorm:    14.18s      7088272 ns/op   18166 B/op    365 allocs/op
+
+  2000 times - Read
+       raw:     1.94s       972348 ns/op    1344 B/op     34 allocs/op
+      sqlx:     2.24s      1121507 ns/op    1810 B/op     36 allocs/op
+       dbr:     2.30s      1147817 ns/op    2104 B/op     34 allocs/op
+ beego_orm:     2.30s      1150904 ns/op    2464 B/op     89 allocs/op
+      gorm:     4.20s      2100567 ns/op    7339 B/op    148 allocs/op
+      xorm:     4.86s      2429631 ns/op    9021 B/op    248 allocs/op
+
+  2000 times - MultiRead limit 1000
+       raw:    18.96s      9480064 ns/op  330224 B/op  12919 allocs/op
+ beego_orm:    19.40s      9699222 ns/op  818825 B/op  40987 allocs/op
+      sqlx:    21.85s     10926113 ns/op  385235 B/op  14942 allocs/op
+      gorm:    24.93s     12465077 ns/op 2393050 B/op  57032 allocs/op
+      xorm:    28.56s     14279999 ns/op 1637513 B/op  72103 allocs/op
+       dbr:    33.95s     16974428 ns/op  622482 B/op  16053 allocs/op
