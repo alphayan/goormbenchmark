@@ -1,0 +1,34 @@
+gorm
+                   Insert:   2000     8.53s      4266746 ns/op    5391 B/op    119 allocs/op
+       BulkInsert 100 row:   2000     Don't support bulk insert - https://github.com/jinzhu/gorm/issues/255
+                   Update:   2000     6.43s      3213608 ns/op    9143 B/op    226 allocs/op
+                     Read:   2000     3.24s      1619782 ns/op    5932 B/op    138 allocs/op
+     MultiRead limit 1000:   2000    20.28s     10139723 ns/op 2392898 B/op  57032 allocs/op
+xorm
+                   Insert:   2000     6.36s      3179444 ns/op    2351 B/op     75 allocs/op
+       BulkInsert 100 row:   2000    17.71s      8854895 ns/op  210305 B/op   4263 allocs/op
+                   Update:   2000     3.18s      1591897 ns/op    2742 B/op     98 allocs/op
+                     Read:   2000     3.57s      1783755 ns/op    9021 B/op    248 allocs/op
+     MultiRead limit 1000:   2000    24.55s     12272953 ns/op 1637503 B/op  72103 allocs/op
+
+Reports: 
+
+  2000 times - Insert
+      xorm:     6.36s      3179444 ns/op    2351 B/op     75 allocs/op
+      gorm:     8.53s      4266746 ns/op    5391 B/op    119 allocs/op
+
+  2000 times - BulkInsert 100 row
+      xorm:    17.71s      8854895 ns/op  210305 B/op   4263 allocs/op
+      gorm:     Don't support bulk insert - https://github.com/jinzhu/gorm/issues/255
+
+  2000 times - Update
+      xorm:     3.18s      1591897 ns/op    2742 B/op     98 allocs/op
+      gorm:     6.43s      3213608 ns/op    9143 B/op    226 allocs/op
+
+  2000 times - Read
+      gorm:     3.24s      1619782 ns/op    5932 B/op    138 allocs/op
+      xorm:     3.57s      1783755 ns/op    9021 B/op    248 allocs/op
+
+  2000 times - MultiRead limit 1000
+      gorm:    20.28s     10139723 ns/op 2392898 B/op  57032 allocs/op
+      xorm:    24.55s     12272953 ns/op 1637503 B/op  72103 allocs/op

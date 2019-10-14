@@ -23,7 +23,6 @@ func init() {
 		engine.SetMaxOpenConns(ORM_MAX_CONN)
 
 		xo = engine.NewSession()
-		xo.NoCache()
 	}
 }
 
@@ -36,7 +35,7 @@ func XormInsert(b *B) {
 
 	for i := 0; i < b.N; i++ {
 		m.Id = 0
-		if _, err := xo.Insert(m); err != nil {
+		if _, err := xo.InsertOne(m); err != nil {
 			fmt.Println(err)
 			b.FailNow()
 		}
@@ -70,7 +69,6 @@ func XormUpdate(b *B) {
 			b.FailNow()
 		}
 	})
-
 	for i := 0; i < b.N; i++ {
 		if _, err := xo.Update(m); err != nil {
 			fmt.Println(err)
@@ -91,7 +89,7 @@ func XormRead(b *B) {
 	})
 
 	for i := 0; i < b.N; i++ {
-		if _, err := xo.NoCache().Get(m); err != nil {
+		if _, err := xo.Get(m); err != nil {
 			fmt.Println(err)
 			b.FailNow()
 		}
@@ -114,7 +112,7 @@ func XormReadSlice(b *B) {
 
 	for i := 0; i < b.N; i++ {
 		var models []*Model
-		if err := xo.Table("models").Where("id > ?", 0).NoCache().Limit(b.L).Find(&models); err != nil {
+		if err := xo.Table("models").Where("id > ?", 0).Limit(b.L).Find(&models); err != nil {
 			fmt.Println(err)
 			b.FailNow()
 		}
