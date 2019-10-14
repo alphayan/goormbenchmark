@@ -3,7 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
-	"goormbenchorm/benchs"
+	"goormbenchorm/mysqlbenchs"
 	"math/rand"
 	"runtime"
 	"strings"
