@@ -21,10 +21,6 @@ github.com/casbin/casbin v1.7.0/go.mod h1:c67qKN6Oum3UF5Q1+BByfFxkwKvhwW57ITjqwt
 github.com/client9/misspell v0.3.4/go.mod h1:qj6jICC3Q7zFZvVWo7KLAzC3yx5G7kyvSDkc90ppPyw=
 github.com/cloudflare/golz4 v0.0.0-20150217214814-ef862a3cdc58/go.mod h1:EOBUe0h4xcZ5GoxqC5SDxFQ8gwyZPKQoEzownBlhI80=
 github.com/cockroachdb/apd v1.1.0/go.mod h1:8Sl8LxpKi29FqWXR16WEFZRNSz3SoPzUzeMeY4+DwBQ=
-github.com/coocood/mysql v0.0.0-20130514171929-d22091ecccb5 h1:vi+4jMR9IJtIKPKLuDSy0oMlpLf7ScOqkkXKKddh1IA=
-github.com/coocood/mysql v0.0.0-20130514171929-d22091ecccb5/go.mod h1:1OErk0g+KcT8QVWy0F8U2f9Q/eq1yoou4LycX9wHwao=
-github.com/coocood/qbs v0.0.0-20170418011607-8554e18a96c9 h1:1DUdzh+eIDE8vNyHdV0lZFaZkpR57y9h755bkwjaLmI=
-github.com/coocood/qbs v0.0.0-20170418011607-8554e18a96c9/go.mod h1:NQuFHdW6rrE7MpBV4/La34COKJtgywFpUTdKZNa40Ks=
 github.com/couchbase/go-couchbase v0.0.0-20181122212707-3e9b6e1258bb/go.mod h1:TWI8EKQMs5u5jLKW/tsb9VwauIrMIxQG1r5fMsswK5U=
 github.com/couchbase/gomemcached v0.0.0-20181122193126-5125a94a666c/go.mod h1:srVSlQLB8iXBVXHgnqemxUXqN6FCvClgCMPCsjBDR7c=
 github.com/couchbase/goutils v0.0.0-20180530154633-e865a1461c8a/go.mod h1:BQwMFlJzDjFDG3DJUdU0KORxn88UlsOULuxLExMh3Hs=

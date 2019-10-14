@@ -18,7 +18,7 @@ func init() {
 		st.AddBenchmark("MultiRead limit 2000", 2000*ORM_MULTI, 2000, PgReadSlice)
 
 		pgdb = pg.Connect(&pg.Options{
-			Addr:     "192.168.199.248:5432",
+			Addr:     "127.0.0.1:5432",
 			User:     "postgres",
 			Password: "root123456",
 			Database: "test",

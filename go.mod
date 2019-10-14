@@ -4,8 +4,6 @@ go 1.13
 
 require (
 	github.com/astaxie/beego v1.12.0
-	github.com/coocood/mysql v0.0.0-20130514171929-d22091ecccb5 // indirect
-	github.com/coocood/qbs v0.0.0-20170418011607-8554e18a96c9
 	github.com/denisenkom/go-mssqldb v0.0.0-20190920000552-128d9f4ae1cd // indirect
 	github.com/go-pg/pg v8.0.6+incompatible
 	github.com/go-sql-driver/mysql v1.4.1
