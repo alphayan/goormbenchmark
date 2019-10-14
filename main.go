@@ -3,7 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
-	"goormbenchorm/mysqlbenchs"
+	"goormbenchorm/benchs"
 	"math/rand"
 	"runtime"
 	"strings"
@@ -45,8 +45,8 @@ func main() {
 	var orms ListOpts
 	flag.IntVar(&benchs.ORM_MAX_IDLE, "max_idle", 200, "max idle conns")
 	flag.IntVar(&benchs.ORM_MAX_CONN, "max_conn", 200, "max open conns")
-	//flag.StringVar(&benchs.ORM_SOURCE, "source", "host=127.0.0.1 port=5432 user=postgres password=root123456 dbname=test sslmode=disable", "postgres dsn source")
-	flag.StringVar(&benchs.ORM_SOURCE, "source", "root:root123456@(127.0.0.1:3306)/test?charset=utf8&parseTime=True&loc=Local", "mysql dsn source")
+	flag.StringVar(&benchs.ORM_SOURCE, "source", "host=127.0.0.1 port=5432 user=postgres password=root123456 dbname=test sslmode=disable", "postgres dsn source")
+	//flag.StringVar(&benchs.ORM_SOURCE, "source", "root:root123456@(127.0.0.1:3306)/test?charset=utf8&parseTime=True&loc=Local", "mysql dsn source")
 	flag.IntVar(&benchs.ORM_MULTI, "multi", 1, "base query nums x multi")
 	flag.Var(&orms, "orm", "orm name: all, "+strings.Join(benchs.BrandNames, ", "))
 	flag.Parse()
