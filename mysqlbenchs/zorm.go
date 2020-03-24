@@ -7,8 +7,6 @@ import (
 	"gitee.com/chunanyong/zorm"
 )
 
-var zormdb *zorm.BaseDao
-
 func init() {
 	st := NewSuite("zorm")
 	st.InitF = func() {
@@ -34,9 +32,11 @@ func ZormInsert(b *B) {
 	})
 	for i := 0; i < b.N; i++ {
 		m.Id = 0
-		d := zorm.SaveStruct(context.Background(), m)
+		_, d := zorm.Transaction(context.Background(), func(ctx context.Context) (interface{}, error) {
+			return nil, zorm.SaveStruct(ctx, m)
+		})
 		if d != nil {
-			fmt.Println(d.Error)
+			fmt.Println(d.Error())
 			b.FailNow()
 		}
 	}
@@ -51,17 +51,22 @@ func ZormUpdate(b *B) {
 	wrapExecute(b, func() {
 		initDB()
 		m = NewModel()
-		d := zorm.SaveStruct(context.Background(), m)
+		_, d := zorm.Transaction(context.Background(), func(ctx context.Context) (interface{}, error) {
+			return nil, zorm.SaveStruct(ctx, m)
+		})
 		if d != nil {
-			fmt.Println(d.Error)
+			fmt.Println(d.Error())
 			b.FailNow()
 		}
 	})
 
 	for i := 0; i < b.N; i++ {
-		d := zorm.UpdateStruct(context.Background(), m)
+		//匿名函数return的error如果不为nil,事务就会回滚
+		_, d := zorm.Transaction(context.Background(), func(ctx context.Context) (interface{}, error) {
+			return nil, zorm.UpdateStruct(ctx, m)
+		})
 		if d != nil {
-			fmt.Println(d.Error)
+			fmt.Println(d.Error())
 			b.FailNow()
 		}
 	}
@@ -72,9 +77,11 @@ func ZormRead(b *B) {
 	wrapExecute(b, func() {
 		initDB()
 		m = NewModel()
-		d := zorm.SaveStruct(context.Background(), m)
+		_, d := zorm.Transaction(context.Background(), func(ctx context.Context) (interface{}, error) {
+			return nil, zorm.SaveStruct(ctx, m)
+		})
 		if d != nil {
-			fmt.Println(d.Error)
+			fmt.Println(d.Error())
 			b.FailNow()
 		}
 	})
@@ -82,7 +89,7 @@ func ZormRead(b *B) {
 		//查询Struct对象列表
 		d := zorm.QueryStruct(context.Background(), zorm.NewSelectFinder(m.TableName()), m)
 		if d != nil {
-			fmt.Println(d.Error)
+			fmt.Println(d.Error())
 			b.FailNow()
 		}
 	}
@@ -95,18 +102,20 @@ func ZormReadSlice(b *B) {
 		m = NewModel()
 		for i := 0; i < b.L; i++ {
 			m.Id = 0
-			d := zorm.SaveStruct(context.Background(), m)
+			_, d := zorm.Transaction(context.Background(), func(ctx context.Context) (interface{}, error) {
+				return nil, zorm.SaveStruct(ctx, m)
+			})
 			if d != nil {
-				fmt.Println(d.Error)
+				fmt.Println(d.Error())
 				b.FailNow()
 			}
 		}
 	})
 	for i := 0; i < b.N; i++ {
-		var models []*Model
-		d := zorm.QueryStructList(context.Background(), zorm.NewSelectFinder(m.TableName()), &models, zorm.NewPage())
+		var models []Model
+		d := zorm.QueryStructList(context.Background(), zorm.NewSelectFinder(m.TableName()).Append(" order by id asc "), &models, zorm.NewPage())
 		if d != nil {
-			fmt.Println(d.Error)
+			fmt.Println(d.Error())
 			b.FailNow()
 		}
 	}
