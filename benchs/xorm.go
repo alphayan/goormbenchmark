@@ -3,7 +3,7 @@ package benchs
 import (
 	"fmt"
 
-	"github.com/go-xorm/xorm"
+	"xorm.io/xorm"
 )
 
 var xo *xorm.Session

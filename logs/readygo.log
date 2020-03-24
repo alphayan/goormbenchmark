@@ -1,0 +1,2 @@
+{"level":"error","time":"2020-03-24T19:07:03.559+0800","line":"/Users/alpha/go/pkg/mod/gitee.com/chunanyong/zorm@v1.2.6/dataSource.go:77","msg":"ping数据库失败:dial tcp 127.0.0.1:3307: connect: connection refused","app":"readygo"}
+{"level":"error","time":"2020-03-24T19:07:03.561+0800","line":"/Users/alpha/go/pkg/mod/gitee.com/chunanyong/zorm@v1.2.6/BaseDao.go:77","msg":"创建dataSource失败:ping数据库失败:dial tcp 127.0.0.1:3307: connect: connection refused","app":"readygo"}

@@ -7,17 +7,31 @@ import (
 )
 
 type Model struct {
-	Id      int    `gorm:"id"`
-	Name    string `gorm:"name"`
-	Title   string `gorm:"title"`
-	Fax     string
-	Web     string
-	Age     int
-	Counter int64
+	Id      int    `gorm:"id" column:"id"`
+	Name    string `gorm:"name" column:"name"`
+	Title   string `gorm:"title" column:"title"`
+	Fax     string `column:"fax"`
+	Web     string `column:"web"`
+	Age     int    `column:"age"`
+	Counter int64  `column:"counter"`
 }
 
 func (*Model) TableName() string {
 	return "models"
+}
+
+//GetTableName 获取表名称
+func (entity *Model) GetTableName() string {
+	return "models"
+}
+
+//GetPKColumnName 获取数据库表的主键字段名称.因为要兼容Map,只能是数据库的字段名称.
+func (entity *Model) GetPKColumnName() string {
+	return "id"
+}
+
+func (entity *Model) GetPkSequence() string {
+	return "id"
 }
 func NewModel() *Model {
 	m := new(Model)

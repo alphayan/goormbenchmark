@@ -7,6 +7,7 @@ cpu e3-1230-v5 4核
 macos catalina
 ###数据库版本
 docker 最新版mysql 8.0        
-docker 最新版mysql 5.7 
+docker 最新版mysql 5.7     
+docker 最新版postgres 
 ###go版本
 go 1.13.1
