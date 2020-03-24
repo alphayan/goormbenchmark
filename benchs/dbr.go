@@ -40,22 +40,7 @@ func DbrInsert(b *B) {
 }
 
 func DbrInsertMulti(b *B) {
-	var m *Model
-	wrapExecute(b, func() {
-		initDB()
-		m = NewModel()
-	})
-	q := dbrsession.InsertInto("models").Columns("name", "title", "fax", "web", "age", "right", "counter")
-	for i := 0; i < b.N; i++ {
-		m.Id = 0
-		q = q.Record(m)
-	}
-
-	if _, err := q.Exec(); err != nil {
-		fmt.Println(err)
-		b.FailNow()
-	}
-
+	panic(fmt.Errorf("Don't support bulk insert"))
 }
 
 func DbrUpdate(b *B) {

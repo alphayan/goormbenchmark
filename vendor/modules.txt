@@ -77,7 +77,7 @@ go.uber.org/zap/internal/bufferpool
 go.uber.org/zap/internal/color
 go.uber.org/zap/internal/exit
 go.uber.org/zap/zapcore
-# golang.org/x/crypto v0.0.0-20200320181102-891825fb96df
+# golang.org/x/crypto v0.0.0-20200323165209-0ec3e9974c59
 ## explicit
 golang.org/x/crypto/pbkdf2
 # golang.org/x/lint v0.0.0-20200302205851-738671d3881b

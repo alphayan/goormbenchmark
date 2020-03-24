@@ -7,18 +7,32 @@ import (
 )
 
 type Model struct {
-	Id      int    `qbs:"pk" orm:"auto" gorm:"primary_key" db:"id" xorm:"autoincr"`
-	Name    string `db:"name""`
-	Title   string `db:"title"`
-	Fax     string `db:"fax"`
-	Web     string `db:"web"`
-	Age     int    `db:"age"`
-	Right   bool   `db:"right"`
-	Counter int64  `db:"counter"`
+	Id      int    `column:"id" qbs:"pk" orm:"auto" gorm:"primary_key" db:"id" xorm:"autoincr"`
+	Name    string `column:"name" db:"name""`
+	Title   string `column:"title" db:"title"`
+	Fax     string `column:"fax" db:"fax"`
+	Web     string `column:"web" db:"web"`
+	Age     int    `column:"age" db:"age"`
+	Right   bool   `column:"right" db:"right"`
+	Counter int64  `column:"counter" db:"counter"`
 }
 
 func (*Model) TableName() string {
 	return "models"
+}
+
+//GetTableName 获取表名称
+func (entity *Model) GetTableName() string {
+	return "models"
+}
+
+//GetPKColumnName 获取数据库表的主键字段名称.因为要兼容Map,只能是数据库的字段名称.
+func (entity *Model) GetPKColumnName() string {
+	return "id"
+}
+
+func (entity *Model) GetPkSequence() string {
+	return "id"
 }
 
 // NewModel initializes a new model struct for inserts

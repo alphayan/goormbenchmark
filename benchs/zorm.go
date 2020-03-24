@@ -17,8 +17,8 @@ func init() {
 		st.AddBenchmark("MultiRead limit 1000", 2000*ORM_MULTI, 1000, ZormReadSlice)
 		dataSourceConfig := zorm.DataSourceConfig{
 			DSN:        ORM_SOURCE,
-			DriverName: "mysql",
-			DBType:     "mysql",
+			DriverName: "postgres",
+			DBType:     "postgresql",
 		}
 		zorm.NewBaseDao(&dataSourceConfig)
 	}
@@ -30,22 +30,16 @@ func ZormInsert(b *B) {
 		initDB()
 		m = NewModel()
 	})
-	b.ResetTimer()
-	_, d := zorm.Transaction(context.Background(), func(ctx context.Context) (interface{}, error) {
-		for i := 0; i < b.N; i++ {
-			m.Id = 0
-			if err := zorm.SaveStruct(ctx, m); err != nil {
-				return nil, err
-			}
+	for i := 0; i < b.N; i++ {
+		m.Id = 0
+		_, d := zorm.Transaction(context.Background(), func(ctx context.Context) (interface{}, error) {
+			return nil, zorm.SaveStruct(ctx, m)
+		})
+		if d != nil {
+			fmt.Println(d.Error())
+			b.FailNow()
 		}
-		return nil, nil
-	})
-
-	if d != nil {
-		fmt.Println(d.Error())
-		b.FailNow()
 	}
-
 }
 
 func ZormInsertMulti(b *B) {
@@ -65,21 +59,17 @@ func ZormUpdate(b *B) {
 			b.FailNow()
 		}
 	})
-	b.ResetTimer()
-	_, d := zorm.Transaction(context.Background(), func(ctx context.Context) (interface{}, error) {
-		for i := 0; i < b.N; i++ {
-			err := zorm.UpdateStruct(ctx, m)
-			if err != nil {
-				return nil, err
-			}
-		}
-		return nil, nil
-	})
-	if d != nil {
-		fmt.Println(d.Error())
-		b.FailNow()
-	}
 
+	for i := 0; i < b.N; i++ {
+		//匿名函数return的error如果不为nil,事务就会回滚
+		_, d := zorm.Transaction(context.Background(), func(ctx context.Context) (interface{}, error) {
+			return nil, zorm.UpdateStruct(ctx, m)
+		})
+		if d != nil {
+			fmt.Println(d.Error())
+			b.FailNow()
+		}
+	}
 }
 
 func ZormRead(b *B) {
@@ -95,7 +85,6 @@ func ZormRead(b *B) {
 			b.FailNow()
 		}
 	})
-	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		//查询Struct对象列表
 		d := zorm.QueryStruct(context.Background(), zorm.NewSelectFinder(m.TableName()), m)
@@ -122,7 +111,6 @@ func ZormReadSlice(b *B) {
 			}
 		}
 	})
-	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		var models []Model
 		d := zorm.QueryStructList(context.Background(), zorm.NewSelectFinder(m.TableName()).Append(" order by id asc "), &models, zorm.NewPage())

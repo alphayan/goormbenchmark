@@ -53,7 +53,7 @@ Reports:
       gorm:    11.93s      5964790 ns/op    5421 B/op    122 allocs/op
 
   2000 times - BulkInsert 100 row
-       dbr:     0.09s        46952 ns/op    2099 B/op     42 allocs/op
+       dbr:     Don't support bulk insert
  beego_orm:    14.58s      7291759 ns/op  124922 B/op   1437 allocs/op
       xorm:    18.93s      9467280 ns/op  253987 B/op   4253 allocs/op
        raw:    19.47s      9733495 ns/op  124832 B/op    817 allocs/op
