@@ -2,7 +2,7 @@
 go run main.go -orm gorm -orm xorm > mysql.txt
 ### 机器配置 
 cpu e3-1230-v5 4核       
-内存 8G
+内存 16G
 ### 操作系统 
 macos catalina
 ### 数据库版本
