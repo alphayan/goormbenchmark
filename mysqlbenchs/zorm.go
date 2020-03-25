@@ -16,9 +16,11 @@ func init() {
 		st.AddBenchmark("Read", 2000*ORM_MULTI, 0, ZormRead)
 		st.AddBenchmark("MultiRead limit 1000", 2000*ORM_MULTI, 1000, ZormReadSlice)
 		dataSourceConfig := zorm.DataSourceConfig{
-			DSN:        ORM_SOURCE,
-			DriverName: "mysql",
-			DBType:     "mysql",
+			DSN:          ORM_SOURCE,
+			DriverName:   "mysql",
+			DBType:       "mysql",
+			MaxIdleConns: ORM_MAX_IDLE,
+			MaxOpenConns: ORM_MAX_CONN,
 		}
 		zorm.NewBaseDao(&dataSourceConfig)
 	}
@@ -31,19 +33,14 @@ func ZormInsert(b *B) {
 		m = NewModel()
 	})
 	b.ResetTimer()
-	_, d := zorm.Transaction(context.Background(), func(ctx context.Context) (interface{}, error) {
-		for i := 0; i < b.N; i++ {
-			m.Id = 0
-			if err := zorm.SaveStruct(ctx, m); err != nil {
-				return nil, err
-			}
+	for i := 0; i < b.N; i++ {
+		m.Id = 0
+		d := zorm.SaveStruct(context.Background(), m)
+		if d != nil {
+			fmt.Println(d.Error())
+			b.FailNow()
 		}
-		return nil, nil
-	})
 
-	if d != nil {
-		fmt.Println(d.Error())
-		b.FailNow()
 	}
 
 }
@@ -57,29 +54,18 @@ func ZormUpdate(b *B) {
 	wrapExecute(b, func() {
 		initDB()
 		m = NewModel()
-		_, d := zorm.Transaction(context.Background(), func(ctx context.Context) (interface{}, error) {
-			return nil, zorm.SaveStruct(ctx, m)
-		})
-		if d != nil {
-			fmt.Println(d.Error())
+		if err := zorm.SaveStruct(context.Background(), m); err != nil {
+			fmt.Println(err)
 			b.FailNow()
 		}
 	})
 	b.ResetTimer()
-	_, d := zorm.Transaction(context.Background(), func(ctx context.Context) (interface{}, error) {
-		for i := 0; i < b.N; i++ {
-			err := zorm.UpdateStruct(ctx, m)
-			if err != nil {
-				return nil, err
-			}
+	for i := 0; i < b.N; i++ {
+		if err := zorm.UpdateStruct(context.Background(), m); err != nil {
+			fmt.Println(err)
+			b.FailNow()
 		}
-		return nil, nil
-	})
-	if d != nil {
-		fmt.Println(d.Error())
-		b.FailNow()
 	}
-
 }
 
 func ZormRead(b *B) {
@@ -87,9 +73,9 @@ func ZormRead(b *B) {
 	wrapExecute(b, func() {
 		initDB()
 		m = NewModel()
-		_, d := zorm.Transaction(context.Background(), func(ctx context.Context) (interface{}, error) {
-			return nil, zorm.SaveStruct(ctx, m)
-		})
+
+		d := zorm.SaveStruct(context.Background(), m)
+
 		if d != nil {
 			fmt.Println(d.Error())
 			b.FailNow()
@@ -113,9 +99,7 @@ func ZormReadSlice(b *B) {
 		m = NewModel()
 		for i := 0; i < b.L; i++ {
 			m.Id = 0
-			_, d := zorm.Transaction(context.Background(), func(ctx context.Context) (interface{}, error) {
-				return nil, zorm.SaveStruct(ctx, m)
-			})
+			d := zorm.SaveStruct(context.Background(), m)
 			if d != nil {
 				fmt.Println(d.Error())
 				b.FailNow()
@@ -125,7 +109,9 @@ func ZormReadSlice(b *B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		var models []Model
-		d := zorm.QueryStructList(context.Background(), zorm.NewSelectFinder(m.TableName()).Append(" order by id asc "), &models, zorm.NewPage())
+		page := zorm.NewPage()
+		page.PageSize = b.L
+		d := zorm.QueryStructList(context.Background(), zorm.NewSelectFinder(m.TableName()).Append(" WHERE id>0 order by id asc "), &models, page)
 		if d != nil {
 			fmt.Println(d.Error())
 			b.FailNow()

@@ -6,7 +6,7 @@ import (
 	"xorm.io/xorm"
 )
 
-var xo *xorm.Session
+var xo *xorm.Engine
 
 func init() {
 	st := NewSuite("xorm")
@@ -22,7 +22,7 @@ func init() {
 		engine.SetMaxIdleConns(ORM_MAX_IDLE)
 		engine.SetMaxOpenConns(ORM_MAX_CONN)
 
-		xo = engine.NewSession()
+		xo = engine
 
 	}
 }
@@ -34,16 +34,13 @@ func XormInsert(b *B) {
 		m = NewModel()
 	})
 	b.ResetTimer()
-	xo.Begin()
 	for i := 0; i < b.N; i++ {
 		m.Id = 0
 		if _, err := xo.InsertOne(m); err != nil {
 			fmt.Println(err)
-			xo.Rollback()
 			b.FailNow()
 		}
 	}
-	xo.Commit()
 }
 
 func XormInsertMulti(b *B) {
@@ -56,15 +53,12 @@ func XormInsertMulti(b *B) {
 		}
 	})
 	b.ResetTimer()
-	xo.Begin()
 	for i := 0; i < b.N; i++ {
-		if _, err := xo.InsertMulti(&ms); err != nil {
+		if _, err := xo.Insert(&ms); err != nil {
 			fmt.Println(err)
-			xo.Rollback()
 			b.FailNow()
 		}
 	}
-	xo.Commit()
 }
 
 func XormUpdate(b *B) {
@@ -78,15 +72,12 @@ func XormUpdate(b *B) {
 		}
 	})
 	b.ResetTimer()
-	xo.Begin()
 	for i := 0; i < b.N; i++ {
 		if _, err := xo.Update(m); err != nil {
 			fmt.Println(err)
-			xo.Rollback()
 			b.FailNow()
 		}
 	}
-	xo.Commit()
 }
 
 func XormRead(b *B) {
@@ -124,7 +115,7 @@ func XormReadSlice(b *B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		var models []*Model
-		if err := xo.Table("models").Where("id > ?", 0).Limit(b.L).Find(&models); err != nil {
+		if err := xo.Table("models").Where("id > ?", 0).Asc("id").Limit(b.L).Find(&models); err != nil {
 			fmt.Println(err)
 			b.FailNow()
 		}

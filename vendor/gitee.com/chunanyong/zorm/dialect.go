@@ -98,7 +98,7 @@ func wrapPageSQL(dbType string, sqlstr string, page *Page) (string, error) {
 
 //包装保存Struct语句.返回语句,是否自增,错误信息
 //数组传递,如果外部方法有调用append的逻辑,传递指针,因为append会破坏指针引用
-func wrapSaveStructSQL(dbType string, entity IEntityStruct, columns *[]reflect.StructField, values *[]interface{}) (string, bool, error) {
+func wrapSaveStructSQL(dbType string, typeOf reflect.Type, entity IEntityStruct, columns *[]reflect.StructField, values *[]interface{}) (string, bool, error) {
 
 	//是否自增,默认false
 	autoIncrement := false
@@ -111,14 +111,14 @@ func wrapSaveStructSQL(dbType string, entity IEntityStruct, columns *[]reflect.S
 	//SQL语句中,VALUES(?,?,...)语句的构造器
 	var valueSQLBuilder strings.Builder
 	valueSQLBuilder.WriteString(" VALUES (")
-
+	//主键的名称
+	pkFieldName, e := entityPKFieldName(entity, typeOf)
+	if e != nil {
+		return "", autoIncrement, e
+	}
 	for i := 0; i < len(*columns); i++ {
 		field := (*columns)[i]
-		fieldName, e := entityPKFieldName(entity)
-		if e != nil {
-			return "", autoIncrement, e
-		}
-		if field.Name == fieldName { //如果是主键
+		if field.Name == pkFieldName { //如果是主键
 			pkKind := field.Type.Kind()
 
 			if !(pkKind == reflect.String || pkKind == reflect.Int) { //只支持字符串和int类型的主键
@@ -128,6 +128,7 @@ func wrapSaveStructSQL(dbType string, entity IEntityStruct, columns *[]reflect.S
 			pkValue := (*values)[i]
 			if len(entity.GetPkSequence()) > 0 { //如果是主键序列
 				//拼接字符串
+				//sqlBuilder.WriteString(getStructFieldTagColumnValue(typeOf, field.Name))
 				sqlBuilder.WriteString(field.Tag.Get(tagColumnName))
 				sqlBuilder.WriteString(",")
 				valueSQLBuilder.WriteString(entity.GetPkSequence())
@@ -140,7 +141,7 @@ func wrapSaveStructSQL(dbType string, entity IEntityStruct, columns *[]reflect.S
 
 			} else if (pkKind == reflect.String) && (pkValue.(string) == "") { //主键是字符串类型,并且值为"",赋值id
 				//生成主键字符串
-				id := GenerateStringID()
+				id := FuncGenerateStringID()
 				(*values)[i] = id
 				//给对象主键赋值
 				v := reflect.ValueOf(entity).Elem()
@@ -157,6 +158,7 @@ func wrapSaveStructSQL(dbType string, entity IEntityStruct, columns *[]reflect.S
 			}
 		}
 		//拼接字符串
+		//sqlBuilder.WriteString(getStructFieldTagColumnValue(typeOf, field.Name))
 		sqlBuilder.WriteString(field.Tag.Get(tagColumnName))
 		sqlBuilder.WriteString(",")
 		valueSQLBuilder.WriteString("?,")
@@ -179,7 +181,7 @@ func wrapSaveStructSQL(dbType string, entity IEntityStruct, columns *[]reflect.S
 
 //包装更新Struct语句
 //数组传递,如果外部方法有调用append的逻辑,传递指针,因为append会破坏指针引用
-func wrapUpdateStructSQL(dbType string, entity IEntityStruct, columns *[]reflect.StructField, values *[]interface{}, onlyUpdateNotZero bool) (string, error) {
+func wrapUpdateStructSQL(dbType string, typeOf reflect.Type, entity IEntityStruct, columns *[]reflect.StructField, values *[]interface{}, onlyUpdateNotZero bool) (string, error) {
 
 	//SQL语句的构造器
 	var sqlBuilder strings.Builder
@@ -189,16 +191,15 @@ func wrapUpdateStructSQL(dbType string, entity IEntityStruct, columns *[]reflect
 
 	//主键的值
 	var pkValue interface{}
+	//主键的名称
+	pkFieldName, e := entityPKFieldName(entity, typeOf)
+	if e != nil {
+		return "", e
+	}
 
 	for i := 0; i < len(*columns); i++ {
 		field := (*columns)[i]
-
-		fieldName, e := entityPKFieldName(entity)
-		if e != nil {
-			return "", e
-		}
-
-		if field.Name == fieldName { //如果是主键
+		if field.Name == pkFieldName { //如果是主键
 			pkValue = (*values)[i]
 			//去掉这一列,最后处理主键
 			*columns = append((*columns)[:i], (*columns)[i+1:]...)
@@ -216,7 +217,7 @@ func wrapUpdateStructSQL(dbType string, entity IEntityStruct, columns *[]reflect
 			continue
 
 		}
-
+		//sqlBuilder.WriteString(getStructFieldTagColumnValue(typeOf, field.Name))
 		sqlBuilder.WriteString(field.Tag.Get(tagColumnName))
 		sqlBuilder.WriteString("=?,")
 
@@ -464,8 +465,11 @@ func converValueColumnType(v interface{}, columnType *sql.ColumnType) interface{
 	return nil
 }
 
-//GenerateStringID 生成主键字符串
-func GenerateStringID() string {
+//FuncGenerateStringID 默认生成字符串ID的函数.方便自定义扩展
+var FuncGenerateStringID func() string = generateStringID
+
+//generateStringID 生成主键字符串
+func generateStringID() string {
 	//pk := strconv.FormatInt(time.Now().UnixNano(), 10)
 	pk, errUUID := gouuid.NewV4()
 	if errUUID != nil {

@@ -19,12 +19,19 @@ const (
 	privatePrefix = "_privateStructFields_"
 	//数据库列名 缓存的前缀
 	dbColumnNamePrefix = "_dbColumnName_"
+
+	//field对应的column的tag值 缓存的前缀
+	structFieldTagPrefix = "_structFieldTag_"
 	//数据库主键  缓存的前缀
 	dbPKNamePrefix = "_dbPKName_"
 )
 
 // 用于缓存反射的信息,sync.Map内部处理了并发锁
-var cacheStructFieldInfoMap *sync.Map = &sync.Map{}
+//var cacheStructFieldInfoMap *sync.Map = &sync.Map{}
+var cacheStructFieldInfoMap = make(map[string]map[string]reflect.StructField)
+
+//用于缓存field对应的column的tag值
+//var cacheStructFieldTagInfoMap = make(map[string]map[string]string)
 
 //获取StructField的信息.只对struct或者*struct判断,如果是指针,返回指针下实际的struct类型.
 //第一个返回值是可以输出的字段(首字母大写),第二个是不能输出的字段(首字母小写)
@@ -40,9 +47,11 @@ func structFieldInfo(typeOf reflect.Type) error {
 	exportCacheKey := exportPrefix + entityName
 	privateCacheKey := privatePrefix + entityName
 	dbColumnCacheKey := dbColumnNamePrefix + entityName
+	//structFieldTagCacheKey := structFieldTagPrefix + entityName
 	//dbPKNameCacheKey := dbPKNamePrefix + entityName
 	//缓存的数据库主键值
-	_, exportOk := cacheStructFieldInfoMap.Load(exportCacheKey)
+	//_, exportOk := cacheStructFieldInfoMap.Load(exportCacheKey)
+	_, exportOk := cacheStructFieldInfoMap[exportCacheKey]
 	//如果存在值,认为缓存中有所有的信息,不再处理
 	if exportOk {
 		return nil
@@ -75,6 +84,7 @@ func structFieldInfo(typeOf reflect.Type) error {
 	exportStructFieldMap := make(map[string]reflect.StructField)
 	privateStructFieldMap := make(map[string]reflect.StructField)
 	dbColumnFieldMap := make(map[string]reflect.StructField)
+	structFieldTagMap := make(map[string]string)
 
 	//遍历sync.Map,要求输入一个func作为参数
 	//这个函数的入参、出参的类型都已经固定，不能修改
@@ -86,9 +96,10 @@ func structFieldInfo(typeOf reflect.Type) error {
 		if ast.IsExported(fieldName) { //如果是可以输出的
 			exportStructFieldMap[fieldName] = field
 			//如果是数据库字段
-			tagColumnName := field.Tag.Get(tagColumnName)
-			if len(tagColumnName) > 0 {
-				dbColumnFieldMap[tagColumnName] = field
+			tagColumnValue := field.Tag.Get(tagColumnName)
+			if len(tagColumnValue) > 0 {
+				dbColumnFieldMap[tagColumnValue] = field
+				structFieldTagMap[fieldName] = tagColumnValue
 			}
 
 		} else { //私有属性
@@ -100,10 +111,14 @@ func structFieldInfo(typeOf reflect.Type) error {
 	allFieldMap.Range(f)
 
 	//加入缓存
-	cacheStructFieldInfoMap.Store(exportCacheKey, exportStructFieldMap)
-	cacheStructFieldInfoMap.Store(privateCacheKey, privateStructFieldMap)
-	cacheStructFieldInfoMap.Store(dbColumnCacheKey, dbColumnFieldMap)
+	//cacheStructFieldInfoMap.Store(exportCacheKey, exportStructFieldMap)
+	//cacheStructFieldInfoMap.Store(privateCacheKey, privateStructFieldMap)
+	//cacheStructFieldInfoMap.Store(dbColumnCacheKey, dbColumnFieldMap)
 
+	cacheStructFieldInfoMap[exportCacheKey] = exportStructFieldMap
+	cacheStructFieldInfoMap[privateCacheKey] = privateStructFieldMap
+	cacheStructFieldInfoMap[dbColumnCacheKey] = dbColumnFieldMap
+	//cacheStructFieldTagInfoMap[structFieldTagCacheKey] = structFieldTagMap
 	return nil
 }
 
@@ -218,19 +233,42 @@ func deepCopy(dst, src interface{}) error {
 func getDBColumnFieldMap(typeOf reflect.Type) (map[string]reflect.StructField, error) {
 	entityName := typeOf.String()
 
-	dbColumnFieldMap, dbOk := cacheStructFieldInfoMap.Load(dbColumnNamePrefix + entityName)
+	//dbColumnFieldMap, dbOk := cacheStructFieldInfoMap.Load(dbColumnNamePrefix + entityName)
+	dbColumnFieldMap, dbOk := cacheStructFieldInfoMap[dbColumnNamePrefix+entityName]
 	if !dbOk { //缓存不存在
 		//获取实体类的输出字段和私有 字段
 		err := structFieldInfo(typeOf)
 		if err != nil {
 			return nil, err
 		}
-		dbColumnFieldMap, dbOk = cacheStructFieldInfoMap.Load(dbColumnNamePrefix + entityName)
+		//dbColumnFieldMap, dbOk = cacheStructFieldInfoMap.Load(dbColumnNamePrefix + entityName)
+		dbColumnFieldMap, dbOk = cacheStructFieldInfoMap[dbColumnNamePrefix+entityName]
 	}
 
-	dbMap, efOK := dbColumnFieldMap.(map[string]reflect.StructField)
-	if !efOK {
-		return nil, errors.New("缓存数据库字段异常")
-	}
-	return dbMap, nil
+	/*
+		dbMap, efOK := dbColumnFieldMap.(map[string]reflect.StructField)
+		if !efOK {
+			return nil, errors.New("缓存数据库字段异常")
+		}
+		return dbMap, nil
+	*/
+	return dbColumnFieldMap, nil
 }
+
+/*
+//获取 fileName 属性 中 tag column的值
+func getStructFieldTagColumnValue(typeOf reflect.Type, fieldName string) string {
+	entityName := typeOf.String()
+	structFieldTagMap, dbOk := cacheStructFieldTagInfoMap[structFieldTagPrefix+entityName]
+	if !dbOk { //缓存不存在
+		//获取实体类的输出字段和私有 字段
+		err := structFieldInfo(typeOf)
+		if err != nil {
+			return ""
+		}
+		structFieldTagMap, dbOk = cacheStructFieldTagInfoMap[structFieldTagPrefix+entityName]
+	}
+
+	return structFieldTagMap[fieldName]
+}
+*/

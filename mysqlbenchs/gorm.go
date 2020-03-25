@@ -21,6 +21,8 @@ func init() {
 		if err != nil {
 			fmt.Println(err)
 		}
+		conn.DB().SetMaxIdleConns(ORM_MAX_IDLE)
+		conn.DB().SetMaxOpenConns(ORM_MAX_CONN)
 		gormdb = conn
 	}
 }
@@ -32,17 +34,14 @@ func GormInsert(b *B) {
 		m = NewModel()
 	})
 	b.ResetTimer()
-	db := gormdb.Begin()
 	for i := 0; i < b.N; i++ {
 		m.Id = 0
-		d := db.Create(m)
+		d := gormdb.Create(m)
 		if d.Error != nil {
 			fmt.Println(d.Error)
-			db.Rollback()
 			b.FailNow()
 		}
 	}
-	db.Commit()
 }
 
 func GormInsertMulti(b *B) {
@@ -61,16 +60,13 @@ func GormUpdate(b *B) {
 		}
 	})
 	b.ResetTimer()
-	db := gormdb.Begin()
 	for i := 0; i < b.N; i++ {
 		d := gormdb.Model(m).Updates(m)
 		if d.Error != nil {
 			fmt.Println(d.Error)
-			db.Rollback()
 			b.FailNow()
 		}
 	}
-	db.Commit()
 }
 
 func GormRead(b *B) {
@@ -111,10 +107,9 @@ func GormReadSlice(b *B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		var models []*Model
-		d := gormdb.Where("id > ?", 0).Limit(b.L).Find(&models)
+		d := gormdb.Where("id > ?", 0).Order("id asc").Limit(b.L).Find(&models)
 		if d.Error != nil {
 			fmt.Println(d.Error)
-
 			b.FailNow()
 		}
 	}
