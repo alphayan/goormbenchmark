@@ -3,7 +3,8 @@ package main
 import (
 	"flag"
 	"fmt"
-	"goormbenchorm/mysqlbenchs"
+	"goormbenchorm/benchs"
+	mybenchs "goormbenchorm/mysqlbenchs"
 	"math/rand"
 	"runtime"
 	"strings"
@@ -43,16 +44,33 @@ func main() {
 	runtime.GOMAXPROCS(runtime.NumCPU())
 
 	var orms ListOpts
-	flag.IntVar(&benchs.ORM_MAX_IDLE, "max_idle", 200, "max idle conns")
-	flag.IntVar(&benchs.ORM_MAX_CONN, "max_conn", 200, "max open conns")
-	//flag.StringVar(&benchs.ORM_SOURCE, "source", "host=127.0.0.1 port=5432 user=postgres password=root123456 dbname=test sslmode=disable", "postgres dsn source")
-	flag.StringVar(&benchs.ORM_SOURCE, "source", "root:root123456@(127.0.0.1:3306)/test?charset=utf8&parseTime=True&loc=Local", "mysql dsn source")
-	flag.IntVar(&benchs.ORM_MULTI, "multi", 1, "base query nums x multi")
+	var dbtype string
+	var max_idle int
+	var max_conn int
+	var mysql_source string
+	var postgresq_source string
+	var multi int
+	flag.IntVar(&max_idle, "max_idle", 20, "max idle conns")
+	flag.IntVar(&max_conn, "max_conn", 200, "max open conns")
+	flag.StringVar(&dbtype, "db type", "mysql", "mysql or postgresql")
+	flag.StringVar(&postgresq_source, "psource", "host=127.0.0.1 port=5432 user=postgres password=root123456 dbname=test sslmode=disable", "postgres dsn source")
+	flag.StringVar(&mysql_source, "msource", "root:root123456@(127.0.0.1:3306)/test?charset=utf8&parseTime=True&loc=Local", "mysql dsn source")
+	flag.IntVar(&multi, "multi", 1, "base query nums x multi")
 	flag.Var(&orms, "orm", "orm name: all, "+strings.Join(benchs.BrandNames, ", "))
 	flag.Parse()
-
 	var all bool
-
+	switch dbtype {
+	case "postgresql":
+		benchs.ORM_MAX_CONN = max_conn
+		benchs.ORM_MAX_IDLE = max_idle
+		benchs.ORM_MULTI = multi
+		benchs.ORM_SOURCE = postgresq_source
+	default:
+		mybenchs.ORM_MAX_CONN = max_conn
+		mybenchs.ORM_MAX_IDLE = max_idle
+		mybenchs.ORM_MULTI = multi
+		mybenchs.ORM_SOURCE = mysql_source
+	}
 	if len(orms) == 0 {
 		all = true
 	} else {
@@ -75,6 +93,11 @@ func main() {
 	}
 
 	fmt.Println("\nReports: \n")
-	fmt.Print(benchs.MakeReport())
+	switch dbtype {
+	case "postgresql":
+		fmt.Print(benchs.MakeReport())
+	default:
+		fmt.Print(mybenchs.MakeReport())
+	}
 
 }

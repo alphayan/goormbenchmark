@@ -20,6 +20,8 @@ func init() {
 
 		db, err := sqlx.Connect("mysql", ORM_SOURCE)
 		checkErr(err)
+		db.SetMaxOpenConns(ORM_MAX_CONN)
+		db.SetMaxIdleConns(ORM_MAX_IDLE)
 		sqlxdb = db
 	}
 }
@@ -31,6 +33,7 @@ func SqlxInsert(b *B) {
 		m = NewModel()
 	})
 	var err error
+	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		if _, err = sqlxdb.Exec(`INSERT INTO models (name, title, fax, web, age, counter) VALUES (?, ?, ?, ?, ?, ?)`,
 			m.Name, m.Title, m.Fax, m.Web, m.Age, m.Counter); err != nil {
@@ -55,7 +58,7 @@ func SqlxUpdate(b *B) {
 			b.FailNow()
 		}
 	})
-
+	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		sqlxdb.MustExec(`UPDATE models SET name = ?, title = ?, fax = ?, web = ?, age = ?,  counter = ? WHERE id = ?`,
 			m.Name, m.Title, m.Fax, m.Web, m.Age, m.Counter, m.Id)
@@ -69,6 +72,7 @@ func SqlxRead(b *B) {
 		m = NewModel()
 		sqlxdb.MustExec(`INSERT INTO models (name, title, fax, web, age,  counter) VALUES (?, ?, ?, ?, ?, ?)`, m.Name, m.Title, m.Fax, m.Web, m.Age, m.Counter)
 	})
+	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		m := []Model{}
 		if err := sqlxdb.Select(&m, "SELECT * FROM models"); err != nil {
@@ -87,7 +91,7 @@ func SqlxReadSlice(b *B) {
 			sqlxdb.MustExec(`INSERT INTO models (name, title, fax, web, age, counter) VALUES (?, ?, ?, ?, ?, ?)`, m.Name, m.Title, m.Fax, m.Web, m.Age, m.Counter)
 		}
 	})
-
+	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		var models []*Model
 		if err := sqlxdb.Select(&models, "SELECT * FROM models WHERE id > ? LIMIT ?", 0, b.L); err != nil {

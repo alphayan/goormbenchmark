@@ -19,7 +19,8 @@ func init() {
 
 		orm.RegisterDataBase("default", "mysql", ORM_SOURCE, ORM_MAX_IDLE, ORM_MAX_CONN)
 		orm.RegisterModel(new(Model))
-
+		orm.SetMaxOpenConns("default", ORM_MAX_CONN)
+		orm.SetMaxIdleConns("default", ORM_MAX_IDLE)
 		bo = orm.NewOrm()
 	}
 }
@@ -49,7 +50,7 @@ func BeegoOrmInsertMulti(b *B) {
 			ms = append(ms, NewModel())
 		}
 	})
-
+	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		if _, err := bo.InsertMulti(100, ms); err != nil {
 			fmt.Println(err)
@@ -68,7 +69,7 @@ func BeegoOrmUpdate(b *B) {
 			b.FailNow()
 		}
 	})
-
+	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		if _, err := bo.Update(m); err != nil {
 			fmt.Println(err)
@@ -87,7 +88,7 @@ func BeegoOrmRead(b *B) {
 			b.FailNow()
 		}
 	})
-
+	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		if err := bo.Read(m); err != nil {
 			fmt.Println(err)
@@ -109,7 +110,7 @@ func BeegoOrmReadSlice(b *B) {
 			}
 		}
 	})
-
+	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		var models []*Model
 		if _, err := bo.QueryTable("models").Filter("id__gt", 0).Limit(b.L).All(&models); err != nil {

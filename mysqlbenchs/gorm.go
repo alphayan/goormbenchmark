@@ -24,6 +24,7 @@ func init() {
 		conn.DB().SetMaxIdleConns(ORM_MAX_IDLE)
 		conn.DB().SetMaxOpenConns(ORM_MAX_CONN)
 		gormdb = conn
+
 	}
 }
 

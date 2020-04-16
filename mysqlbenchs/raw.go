@@ -45,7 +45,7 @@ func RawInsert(b *B) {
 		}
 	})
 	defer stmt.Close()
-
+	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		// pq dose not support the LastInsertId method.
 		_, err := stmt.Exec(m.Name, m.Title, m.Fax, m.Web, m.Age, m.Counter)
@@ -94,7 +94,7 @@ func RawInsertMulti(b *B) {
 			valuesSQL += "(" + hoge + ")"
 		}
 	}
-
+	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		nFields := 6
 		query := rawInsertBaseSQL + valuesSQL
@@ -132,7 +132,7 @@ func RawUpdate(b *B) {
 		}
 	})
 	defer stmt.Close()
-
+	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		_, err := stmt.Exec(m.Name, m.Title, m.Fax, m.Web, m.Age, m.Counter, m.Id)
 		if err != nil {
@@ -157,7 +157,7 @@ func RawRead(b *B) {
 		}
 	})
 	defer stmt.Close()
-
+	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		var mout Model
 		err := stmt.QueryRow(1).Scan(
@@ -197,7 +197,7 @@ func RawReadSlice(b *B) {
 		}
 	})
 	defer stmt.Close()
-
+	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		var j int
 		models := make([]Model, b.L)

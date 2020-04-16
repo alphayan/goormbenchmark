@@ -23,7 +23,6 @@ func init() {
 		engine.SetMaxOpenConns(ORM_MAX_CONN)
 
 		xo = engine
-
 	}
 }
 
