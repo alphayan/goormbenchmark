@@ -3,7 +3,9 @@ package benchs
 import (
 	"fmt"
 
-	"github.com/jinzhu/gorm"
+	"gorm.io/driver/postgres"
+
+	"gorm.io/gorm"
 )
 
 var gormdb *gorm.DB
@@ -17,7 +19,7 @@ func init() {
 		st.AddBenchmark("Read", 2000*ORM_MULTI, 0, GormRead)
 		st.AddBenchmark("MultiRead limit 2000", 2000*ORM_MULTI, 2000, GormReadSlice)
 
-		conn, err := gorm.Open("postgres", ORM_SOURCE)
+		conn, err := gorm.Open(postgres.Open(ORM_SOURCE), &gorm.Config{})
 		if err != nil {
 			fmt.Println(err)
 		}
@@ -43,7 +45,7 @@ func GormInsert(b *B) {
 }
 
 func GormInsertMulti(b *B) {
-	panic(fmt.Errorf("Don't support bulk insert - https://github.com/jinzhu/gorm/issues/255"))
+	panic(fmt.Errorf("Don't support bulk insert - https://gorm.io/gorm/issues/255"))
 }
 
 func GormUpdate(b *B) {

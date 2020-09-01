@@ -86,10 +86,18 @@ func main() {
 	}
 
 	orms.Shuffle()
+	switch dbtype {
+	case "postgresql":
+		for _, n := range orms {
+			fmt.Println(n)
+			benchs.RunBenchmark(n)
+		}
+	default:
+		for _, n := range orms {
+			fmt.Println(n)
+			mybenchs.RunBenchmark(n)
+		}
 
-	for _, n := range orms {
-		fmt.Println(n)
-		benchs.RunBenchmark(n)
 	}
 
 	fmt.Println("\nReports: \n")
