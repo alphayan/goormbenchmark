@@ -3,7 +3,7 @@ package benchs
 import (
 	"fmt"
 
-	"github.com/astaxie/beego/orm"
+	"github.com/beego/beego/v2/client/orm"
 )
 
 var bo orm.Ormer
@@ -17,7 +17,8 @@ func init() {
 		st.AddBenchmark("Read", 2000*ORM_MULTI, 0, BeegoOrmRead)
 		st.AddBenchmark("MultiRead limit 2000", 2000*ORM_MULTI, 2000, BeegoOrmReadSlice)
 
-		orm.RegisterDataBase("default", "postgres", ORM_SOURCE, ORM_MAX_IDLE, ORM_MAX_CONN)
+		orm.RegisterDataBase("default", "postgres", ORM_SOURCE, orm.MaxIdleConnections(ORM_MAX_IDLE),
+			orm.MaxOpenConnections(ORM_MAX_CONN))
 		orm.RegisterModel(new(Model))
 
 		bo = orm.NewOrm()

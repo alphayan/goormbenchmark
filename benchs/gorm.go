@@ -19,7 +19,10 @@ func init() {
 		st.AddBenchmark("Read", 2000*ORM_MULTI, 0, GormRead)
 		st.AddBenchmark("MultiRead limit 2000", 2000*ORM_MULTI, 2000, GormReadSlice)
 
-		conn, err := gorm.Open(postgres.Open(ORM_SOURCE), &gorm.Config{})
+		conn, err := gorm.Open(postgres.Open(ORM_SOURCE), &gorm.Config{
+			SkipDefaultTransaction: true,
+			PrepareStmt:            true,
+		})
 		if err != nil {
 			fmt.Println(err)
 		}
@@ -45,7 +48,22 @@ func GormInsert(b *B) {
 }
 
 func GormInsertMulti(b *B) {
-	panic(fmt.Errorf("Don't support bulk insert - https://gorm.io/gorm/issues/255"))
+	var ms []Model
+	wrapExecute(b, func() {
+		initDB()
+		ms = make([]Model, 0, 100)
+		for i := 0; i < 100; i++ {
+			ms = append(ms, *NewModel())
+		}
+	})
+	for i := 0; i < b.N; i++ {
+		ms1 := make([]Model, 100)
+		copy(ms1, ms)
+		if err := gormdb.Create(ms1).Error; err != nil {
+			//fmt.Println(err)
+			b.FailNow()
+		}
+	}
 }
 
 func GormUpdate(b *B) {

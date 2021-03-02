@@ -50,11 +50,11 @@ func main() {
 	var mysql_source string
 	var postgresq_source string
 	var multi int
-	flag.IntVar(&max_idle, "max_idle", 20, "max idle conns")
-	flag.IntVar(&max_conn, "max_conn", 200, "max open conns")
+	flag.IntVar(&max_idle, "max_idle", 99, "max idle conns")
+	flag.IntVar(&max_conn, "max_conn", 999, "max open conns")
 	flag.StringVar(&dbtype, "dbtype", "mysql", "value: mysql,postgresql")
 	flag.StringVar(&postgresq_source, "psource", "host=127.0.0.1 port=5432 user=postgres password=root123456 dbname=test sslmode=disable", "postgres dsn source")
-	flag.StringVar(&mysql_source, "msource", "root:root123456@(127.0.0.1:3306)/test?charset=utf8&parseTime=True&loc=Local", "mysql dsn source")
+	flag.StringVar(&mysql_source, "msource", "root:root123456@(127.0.0.1:3307)/test?charset=utf8mb4&parseTime=True&loc=Local", "mysql dsn source")
 	flag.IntVar(&multi, "multi", 1, "base query nums x multi")
 	flag.Var(&orms, "orm", "orm name: all, "+strings.Join(benchs.BrandNames, ", "))
 	flag.Parse()

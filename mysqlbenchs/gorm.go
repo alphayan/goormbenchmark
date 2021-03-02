@@ -18,8 +18,9 @@ func init() {
 		st.AddBenchmark("Read", 2000*ORM_MULTI, 0, GormRead)
 		st.AddBenchmark("MultiRead limit 1000", 2000*ORM_MULTI, 1000, GormReadSlice)
 
-		conn, err := gorm.Open(mysql.Open(ORM_SOURCE), &gorm.Config{SkipDefaultTransaction: true,
-			PrepareStmt: true})
+		conn, err := gorm.Open(mysql.Open(ORM_SOURCE), &gorm.Config{
+			SkipDefaultTransaction: true,
+			PrepareStmt:            true})
 		if err != nil {
 			fmt.Println(err)
 			return
