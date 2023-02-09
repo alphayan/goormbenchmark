@@ -3,7 +3,7 @@ module goormbenchorm
 go 1.15
 
 require (
-	github.com/beego/beego/v2 v2.0.2
+	github.com/beego/beego/v2 v2.0.3
 	github.com/go-pg/pg v8.0.7+incompatible
 	github.com/go-sql-driver/mysql v1.6.0
 	github.com/goccy/go-json v0.9.6 // indirect
