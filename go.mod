@@ -17,7 +17,7 @@ require (
 	gorm.io/driver/mysql v1.3.3
 	gorm.io/driver/postgres v1.3.4
 	gorm.io/gorm v1.23.4
-	mellium.im/sasl v0.2.1 // indirect
+	mellium.im/sasl v0.3.1 // indirect
 	xorm.io/builder v0.3.10 // indirect
 	xorm.io/xorm v1.3.0
 )
